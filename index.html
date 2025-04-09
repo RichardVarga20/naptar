@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Naptár</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-wrapper">
+        <div class="background-gradient"></div>
+        <div class="glass-container">
+            <!-- Main Calendar Panel (Now on Left) -->
+            <div class="main-panel">
+                <div class="calendar-header">
+                    <div class="calendar-title">
+                        <h2 id="calendar-title"></h2>
+                        <p id="calendar-subtitle"></p>
+                    </div>
+                    <div class="calendar-controls">
+                        <button id="prev-month" class="control-btn">
+                            <i class="bi bi-chevron-left"></i>
+                        </button>
+                        <button id="today-btn" class="control-btn today">Ma</button>
+                        <button id="next-month" class="control-btn">
+                            <i class="bi bi-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="calendar-container">
+                    <div class="weekday-header">
+                        <div class="weekday">Vas</div>
+                        <div class="weekday">Hét</div>
+                        <div class="weekday">Ked</div>
+                        <div class="weekday">Sze</div>
+                        <div class="weekday">Csü</div>
+                        <div class="weekday">Pén</div>
+                        <div class="weekday">Szo</div>
+                    </div>
+                    <div id="calendar-days" class="calendar-grid"></div>
+                </div>
+            </div>
+            
+            <!-- Right Panel (Previously Left) -->
+            <div class="right-panel">
+                <div class="brand">
+                    <div class="logo">
+                        <i class="bi bi-calendar-check"></i>
+                    </div>
+                    <h1>Premium<span>Naptár</span></h1>
+                </div>
+                
+                <div class="date-display">
+                    <div class="current-day" id="current-day"></div>
+                    <div class="current-date" id="current-date"></div>
+                </div>
+                
+                <div class="action-button">
+                    <button id="add-event-btn">
+                        <i class="bi bi-plus"></i>
+                        <span>Új esemény</span>
+                    </button>
+                </div>
+                
+                <div class="view-selector">
+                    <h3>Nézet</h3>
+                    <div class="view-options">
+                        <button type="button" class="view-option active" data-view="month">
+                            <i class="bi bi-grid-3x3"></i>
+                            <span>Hónap</span>
+                        </button>
+                        <button type="button" class="view-option" data-view="week">
+                            <i class="bi bi-calendar-week"></i>
+                            <span>Hét</span>
+                        </button>
+                        <button type="button" class="view-option" data-view="day">
+                            <i class="bi bi-calendar-day"></i>
+                            <span>Nap</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="upcoming-section">
+                    <h3>Közelgő események</h3>
+                    <div id="upcoming-events" class="upcoming-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Event Modal -->
+    <div class="modal fade" id="eventModal" tabindex="-1" aria-labelledby="eventModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="eventModalLabel">Esemény hozzáadása</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Bezárás"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="event-form">
+                        <div class="mb-4">
+                            <label for="event-title" class="form-label">Esemény címe</label>
+                            <input type="text" class="form-control" id="event-title" required>
+                        </div>
+                        <div class="mb-4">
+                            <label for="event-date" class="form-label">Dátum</label>
+                            <input type="date" class="form-control" id="event-date" required>
+                        </div>
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label for="event-start-time" class="form-label">Kezdés időpontja</label>
+                                <input type="time" class="form-control" id="event-start-time">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="event-end-time" class="form-label">Befejezés időpontja</label>
+                                <input type="time" class="form-control" id="event-end-time">
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label d-block">Kategória</label>
+                            <div class="color-palette">
+                                <div class="color-option" data-color="primary">
+                                    <input type="radio" name="color" id="color-primary" value="primary" checked>
+                                    <label for="color-primary" class="color-badge primary">
+                                        <i class="bi bi-check2"></i>
+                                    </label>
+                                </div>
+                                <div class="color-option" data-color="success">
+                                    <input type="radio" name="color" id="color-success" value="success">
+                                    <label for="color-success" class="color-badge success">
+                                        <i class="bi bi-check2"></i>
+                                    </label>
+                                </div>
+                                <div class="color-option" data-color="danger">
+                                    <input type="radio" name="color" id="color-danger" value="danger">
+                                    <label for="color-danger" class="color-badge danger">
+                                        <i class="bi bi-check2"></i>
+                                    </label>
+                                </div>
+                                <div class="color-option" data-color="warning">
+                                    <input type="radio" name="color" id="color-warning" value="warning">
+                                    <label for="color-warning" class="color-badge warning">
+                                        <i class="bi bi-check2"></i>
+                                    </label>
+                                </div>
+                                <div class="color-option" data-color="info">
+                                    <input type="radio" name="color" id="color-info" value="info">
+                                    <label for="color-info" class="color-badge info">
+                                        <i class="bi bi-check2"></i>
+                                    </label>
+                                </div>
+                                <div class="color-option" data-color="secondary">
+                                    <input type="radio" name="color" id="color-secondary" value="secondary">
+                                    <label for="color-secondary" class="color-badge secondary">
+                                        <i class="bi bi-check2"></i>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label for="event-description" class="form-label">Leírás</label>
+                            <textarea class="form-control" id="event-description" rows="3"></textarea>
+                        </div>
+                        <input type="hidden" id="event-id">
+                        <input type="hidden" id="event-color-input" value="primary">
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" data-bs-dismiss="modal">Mégsem</button>
+                    <button type="button" class="btn-delete d-none" id="delete-event-btn">
+                        <i class="bi bi-trash"></i> Törlés
+                    </button>
+                    <button type="button" class="btn-save" id="save-event-btn">
+                        <i class="bi bi-check-lg"></i> Mentés
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Event Details Modal -->
+    <div class="modal fade" id="eventDetailsModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="event-title-wrapper">
+                        <div class="event-color-indicator" id="event-color-indicator"></div>
+                        <h5 class="modal-title" id="event-details-title"></h5>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Bezárás"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="event-meta">
+                        <div class="event-meta-item">
+                            <i class="bi bi-calendar3"></i>
+                            <span class="event-details-date"></span>
+                        </div>
+                        <div class="event-meta-item event-details-time">
+                            <i class="bi bi-clock"></i>
+                            <span class="event-time-text"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="event-description-box">
+                        <h6>Leírás</h6>
+                        <div class="event-details-description"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" data-bs-dismiss="modal">Bezárás</button>
+                    <button type="button" class="btn-edit" id="edit-event-btn">
+                        <i class="bi bi-pencil"></i> Szerkesztés
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="script.js"></script>
+</body>
+</html>
